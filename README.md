@@ -5,7 +5,7 @@
 
 - Inside /potential_files directory you will find .ini files readable by Agama. The Milky Way potential used is the Milky Way potential from Shipp et al., 2021
 
-- Inside /scripts there is a Python file to execute the MCMC sampler and a sbatch file to submit to Slurm if desired.
+- Inside /scripts there is a **Jupyter Notebook** with the fit made + additionally a Python script and Slurm job file if you don't want to use notebook.
 
 
 - Work in progress, and quite buggy! Will add in a python kernel file to add, so that the necessary packages are there when you need to run in your home directory or on your own slurm cluster.
