@@ -87,9 +87,8 @@ def log_likelihood(
         phi1_obs_dist = None,
         phi1_range = [-25, 20],
         seed_num=69420,
-        sigma_phi2=0.24,
-        sigma_rv=25,
-        sigma_pm=0.55):
+        sigma_rv=4.06,
+        sigma_spatial=0.30):
     """
     Compute the log likelihood of the data given the model parameters.
     prog_pars: 6D coordinates of the progenitor, with phi_1 fixed at 0 deg
@@ -196,11 +195,11 @@ def log_likelihood(
         print("phi2 spline failed")
         return -np.inf
         
-    #phi2_std = np.nanstd(phi2_model[phi1_model_sel] - phi2_spline(phi1_model[phi1_model_sel]))
+    phi2_std = np.nanstd(phi2_model[phi1_model_sel] - phi2_spline(phi1_model[phi1_model_sel]))
     
     phi2_vals = phi2_spline(phi1_obs[phi1_obs_sel])
     lnlk_spatial = stats.norm.logpdf(phi2_obs[phi1_obs_sel], loc=phi2_vals,
-                                  scale=np.sqrt(sigma_phi2**2))
+                                  scale=np.sqrt((phi2_std**2) + (sigma_spatial**2)))
     # print("lnlk_spatial:", lnlk_spatial)
     
     ## dist track
@@ -250,7 +249,7 @@ def log_likelihood(
     pmra_cosdec_vals = pmra_cosdec_spline(phi1_obs[phi1_obs_sel])
     
     lnlk_pmra_cosdec = stats.norm.logpdf(pmra_cosdec_obs[phi1_obs_sel], loc=pmra_cosdec_vals,
-                                      scale=np.sqrt(pmra_cosdec_obs_errors[phi1_obs_sel]**2 + sigma_pm**2))
+                                      scale= pmra_cosdec_obs_errors[phi1_obs_sel])
 
     # print("lnlk_pmra_cosdec:", lnlk_pmra_cosdec)
     
@@ -262,7 +261,7 @@ def log_likelihood(
     pmdec_vals = pmdec_spline(phi1_obs[phi1_obs_sel])
     
     lnlk_pmdec = stats.norm.logpdf(pmdec_obs[phi1_obs_sel], loc=pmdec_vals,
-                                scale=np.sqrt(pmdec_obs_errors[phi1_obs_sel]**2 + sigma_pm**2))
+                                scale= pmdec_obs_errors[phi1_obs_sel])
     # print("lnlk_pmdec:", lnlk_pmdec)
     
     lnlk_total = lnlk_spatial + lnlk_velocity + lnlk_pmra_cosdec + lnlk_pmdec + lnlk_dist
